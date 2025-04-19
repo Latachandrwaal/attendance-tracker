@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Advanced Attendance Tracker</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f2f2f2; }
+    .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
+    h2 { text-align: center; }
+    select, input, button { width: 100%; padding: 10px; margin: 10px 0; }
+    #earlyLeaveTime { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Check-In</h2>
+    <form action="save_attendance.php" method="POST">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <select name="checkin_type" required>
+        <option value="">Select Type</option>
+        <option value="Present">Present</option>
+        <option value="Work From Home">Work From Home</option>
+      </select>
+      <input type="hidden" name="checkin_time" id="checkin_time" />
+      <input type="hidden" name="latitude" id="latitude_in" />
+      <input type="hidden" name="longitude" id="longitude_in" />
+      <button type="submit">Submit Check-In</button>
+    </form>
+  </div>
+
+  <div class="container" style="margin-top: 30px;">
+    <h2>Check-Out</h2>
+    <form action="save_attendance.php" method="POST">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <select name="checkout_type" id="checkout_type" required>
+        <option value="">Select Type</option>
+        <option value="Full Day">Full Day</option>
+        <option value="Half Day">Half Day</option>
+        <option value="Early Leave">Early Leave</option>
+      </select>
+      <input type="time" name="early_leave_time" id="earlyLeaveTime" />
+      <input type="hidden" name="checkout_time" id="checkout_time" />
+      <input type="hidden" name="latitude" id="latitude_out" />
+      <input type="hidden" name="longitude" id="longitude_out" />
+      <button type="submit">Submit Check-Out</button>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Set current datetime
+      const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+      document.getElementById("checkin_time").value = now;
+      document.getElementById("checkout_time").value = now;
+
+      // Get current location
+      navigator.geolocation.getCurrentPosition(function (position) {
+        document.getElementById("latitude_in").value = position.coords.latitude;
+        document.getElementById("longitude_in").value = position.coords.longitude;
+        document.getElementById("latitude_out").value = position.coords.latitude;
+        document.getElementById("longitude_out").value = position.coords.longitude;
+      });
+
+      // Show/hide early leave time input
+      document.getElementById("checkout_type").addEventListener("change", function () {
+        const timeField = document.getElementById("earlyLeaveTime");
+        if (this.value === "Early Leave") {
+          timeField.style.display = "block";
+          timeField.required = true;
+        } else {
+          timeField.style.display = "none";
+          timeField.required = false;
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
